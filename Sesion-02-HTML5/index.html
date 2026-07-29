@@ -22,6 +22,23 @@
             <article>
                 <h3>La gastronomía guatemalteca</h3>
                 <p>Descubre los mejores platillos de Guatemala.</p>
+                
+                <button commandfor="dialog-id" command="show-modal">Abrir Dialogo</button>
+                <dialog id="dialog-id">
+                    <p>Este es un dialog nativo.</p>
+                    <button commandfor="dialog-id" command="close">Cerrar</button>
+                </dialog>
+
+                <button popovertarget="my-popover">Mostrar Popover</button>
+                <div id="my-popover" popover>
+                    Contenido del popover nativo.
+                </div>
+
+                <form action="#" method="post">
+                    <label for="name">Nombre:</label>
+                    <input type="text" id="name" name="name" required>
+                    <button type="submit">Enviar</button>
+                </form>
             </article>
         </section>
     </main>
