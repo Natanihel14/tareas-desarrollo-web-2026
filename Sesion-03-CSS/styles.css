@@ -1,3 +1,11 @@
 /* Archivo principal de estilos */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+body { font-family: sans-serif; background-color: #f5f5f5; color: #333; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+.producto { background-color: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden; }
+.producto img { width: 100%; height: auto; display: block; }
+.producto-info { padding: 15px; }
+.producto-info h2 { font-size: 1.2rem; margin-bottom: 10px; }
+.precio { font-size: 1.5rem; font-weight: bold; color: #007bff; margin-bottom: 15px; }
+.btn-comprar { background-color: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
