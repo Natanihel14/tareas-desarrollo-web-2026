@@ -63,8 +63,12 @@ export function eliminarTarea(id) {
  * @returns {boolean}
  */
 export function toggleTarea(id) {
-    // TODO: recorrer `tareas` y cambiar `completada` de la que coincida.
-    // Devuelve true si la encontró.
+    const tarea = tareas.find(t => t.id === id);
+    if (tarea) {
+        tarea.completada = !tarea.completada;
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -73,7 +77,9 @@ export function toggleTarea(id) {
  * @returns {Array}
  */
 export function filtrarTareas(filtro) {
-    // TODO: implementar la lógica de filtrado.
+    if (filtro === "completadas") return tareas.filter(t => t.completada);
+    if (filtro === "pendientes") return tareas.filter(t => !t.completada);
+    return [...tareas];
 }
 
 /**
@@ -187,5 +193,7 @@ function init() {
 if (typeof document !== "undefined" && document.getElementById("lista-tareas")) {
     document.addEventListener("DOMContentLoaded", init);
 }
+
+
 
 
