@@ -84,7 +84,8 @@ beforeEach(async () => {
     global.Event = dom.window.Event;
 
     // Ejecutar app.js (cache-busting para re-ejecutarlo en cada test)
-    await import(`${join(publicDir, 'app.js')}?t=${Date.now()}-${Math.random()}`);
+    const { pathToFileURL } = await import('node:url');
+    await import(`${pathToFileURL(join(publicDir, 'app.js')).href}?t=${Date.now()}-${Math.random()}`);
     dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
     await esperar();
 });
