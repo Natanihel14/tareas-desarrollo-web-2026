@@ -31,7 +31,12 @@ export const __dirname = dirname(__filename);
  * @type {import('express').RequestHandler}
  */
 export function autenticacionFalsa(req, res, next) {
-    next(); // ← TODO: reemplazar por la validación del header
+    const clave = req.get('x-api-key');
+    const valid = process.env.API_KEY || 'umg-2026';
+    if (clave !== valid) {
+        return res.status(401).json({ error: 'No autorizado' });
+    }
+    next();
 }
 
 /**
@@ -47,7 +52,29 @@ export function autenticacionFalsa(req, res, next) {
  * @type {import('express').RequestHandler}
  */
 export function validarAlumno(req, res, next) {
-    next(); // ← TODO: reemplazar por las validaciones
+    const { nombre, apellido, email, edad } = req.body;
+    
+    if (!nombre || typeof nombre !== 'string' || !nombre.trim()) {
+        return res.status(400).json({ error: 'El nombre es obligatorio' });
+    }
+    if (!apellido || typeof apellido !== 'string' || !apellido.trim()) {
+        return res.status(400).json({ error: 'El apellido es obligatorio' });
+    }
+    if (!email || typeof email !== 'string' || !email.includes('@')) {
+        return res.status(400).json({ error: 'El email debe ser válido' });
+    }
+    if (edad !== undefined) {
+        if (typeof edad !== 'number' || isNaN(edad) || edad < 0) {
+            return res.status(400).json({ error: 'La edad debe ser mayor o igual a 0' });
+        }
+    }
+    
+    // Mutate to trim for safety
+    req.body.nombre = nombre.trim();
+    req.body.apellido = apellido.trim();
+    req.body.email = email.trim();
+    
+    next();
 }
 
 // ============================================================
@@ -70,29 +97,31 @@ export function crearApp(repositorio) {
     // Sitio web estático (public/index.html, styles.css, app.js)
     app.use(express.static(join(__dirname, '..', 'public')));
 
-    // TODO: GET /alumnos → lista todos                    → 200 [ ...alumnos ]
     app.get('/alumnos', (req, res) => {
-        res.status(501).json({ error: 'TODO: GET /alumnos' });
+        res.status(200).json(repositorio.listar());
     });
 
-    // TODO: GET /alumnos/:id → uno o 404
     app.get('/alumnos/:id', (req, res) => {
-        res.status(501).json({ error: 'TODO: GET /alumnos/:id' });
+        const alumno = repositorio.obtener(req.params.id);
+        if (!alumno) return res.status(404).json({ error: 'Alumno no encontrado' });
+        res.status(200).json(alumno);
     });
 
-    // TODO: POST /alumnos → crear (requiere autenticacionFalsa + validarAlumno) → 201
-    app.post('/alumnos', (req, res) => {
-        res.status(501).json({ error: 'TODO: POST /alumnos' });
+    app.post('/alumnos', autenticacionFalsa, validarAlumno, (req, res) => {
+        const alumno = repositorio.crear(req.body);
+        res.status(201).json(alumno);
     });
 
-    // TODO: PUT /alumnos/:id → actualizar (auth + validarAlumno) → 200 o 404
-    app.put('/alumnos/:id', (req, res) => {
-        res.status(501).json({ error: 'TODO: PUT /alumnos/:id' });
+    app.put('/alumnos/:id', autenticacionFalsa, validarAlumno, (req, res) => {
+        const alumno = repositorio.actualizar(req.params.id, req.body);
+        if (!alumno) return res.status(404).json({ error: 'Alumno no encontrado' });
+        res.status(200).json(alumno);
     });
 
-    // TODO: DELETE /alumnos/:id → eliminar (auth) → 204 o 404
-    app.delete('/alumnos/:id', (req, res) => {
-        res.status(501).json({ error: 'TODO: DELETE /alumnos/:id' });
+    app.delete('/alumnos/:id', autenticacionFalsa, (req, res) => {
+        const success = repositorio.eliminar(req.params.id);
+        if (!success) return res.status(404).json({ error: 'Alumno no encontrado' });
+        res.status(204).send();
     });
 
     return app;
